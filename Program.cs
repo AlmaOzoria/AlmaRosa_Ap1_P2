@@ -1,10 +1,22 @@
 using AlmaRosa_Ap1_P2.Components;
+using AlmaRosa_Ap1_P2.DAL;
+using AlmaRosa_Ap1_P2.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+//Inyectando el ConStr para usarlo en el contexto
+var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
+
+//Inyectando el contexto al builder con el ConStr
+builder.Services.AddDbContextFactory<Contexto>(Options => Options.UseSqlServer(ConStr));
+
+//Inyectando service
+builder.Services.AddScoped<RegistroServices>();
 
 var app = builder.Build();
 
