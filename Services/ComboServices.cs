@@ -2,17 +2,18 @@
 using AlmaRosa_Ap1_P2.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using static Azure.Core.HttpHeader;
 
 namespace AlmaRosa_Ap1_P2.Services;
 
-public class RegistroServices(IDbContextFactory<Contexto> DbFactory)
+public class ComboServices(IDbContextFactory<Contexto> DbFactory)
 {
-    public async Task<bool> Insertar(Registros registros)
+    public async Task<bool> Insertar(Combos combos)
     {
         await using var _contexto = await DbFactory.CreateDbContextAsync();
         try
         {
-            _contexto.Registros.Add(registros);
+            _contexto.Combos.Add(combos);
             return await _contexto.SaveChangesAsync() > 0;
         }
         catch (DbUpdateException ex)
@@ -24,29 +25,29 @@ public class RegistroServices(IDbContextFactory<Contexto> DbFactory)
     }
 
 
-    public async Task<bool> Existe(int registroId)
+    public async Task<bool> Existe(int combosId)
     {
         await using var _contexto = await DbFactory.CreateDbContextAsync();
-        return await _contexto.Registros.AnyAsync(c => c.RegistroId == registroId);
+        return await _contexto.Combos.AnyAsync(c => c.ComboId == combosId);
 
     }
 
-    public async Task<bool> Modificar(Registros registros)
+    public async Task<bool> Modificar(Combos combos)
     {
         await using var _contexto = await DbFactory.CreateDbContextAsync();
-        _contexto.Update(registros);
+        _contexto.Update(combos);
         return await _contexto.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> Guardar(Registros registros)
+    public async Task<bool> Guardar(Combos combos)
     {
-        if (registros.RegistroId == 0)
+        if (combos.ComboId == 0)
         {
-            return await Insertar(registros);
+            return await Insertar(combos);
         }
         else
         {
-            return await Modificar(registros);
+            return await Modificar(combos);
         }
     }
 
@@ -54,34 +55,37 @@ public class RegistroServices(IDbContextFactory<Contexto> DbFactory)
     public async Task<bool> Eliminar(int id)
     {
         await using var _contexto = await DbFactory.CreateDbContextAsync();
-        var cotizaciones = await _contexto.Registros
-            .Where(c => c.RegistroId == id)
+        var combo = await _contexto.Combos
+            .Where(c => c.ComboId == id)
             .ExecuteDeleteAsync();
-        return cotizaciones > 0;
+        return combo > 0;
 
     }
 
-    public async Task<List<Registros>> Listar(Expression<Func<Registros, bool>> criterio)
+    public async Task<List<Combos>> Listar(Expression<Func<Combos, bool>> criterio)
     {
         using var _contexto = await DbFactory.CreateDbContextAsync();
-
-        return await _contexto.Registros
+        return await _contexto.Combos
             .AsNoTracking()
-            //.Include(t => t.CotizacionesDetalle)
+            //.Include(c => c.CombosDetalle)
             .Where(criterio)
             .ToListAsync();
     }
 
 
-    public async Task<Registros?> Buscar(int id)
+    public async Task<Combos?> Buscar(int id)
     {
         await using var _contexto = await DbFactory.CreateDbContextAsync();
 
-        return await _contexto.Registros
+        return await _contexto.Combos
        .AsNoTracking()
-       //.Include(c => c.CotizacionesDetalle)
-       .FirstOrDefaultAsync(c => c.RegistroId == id);
+       //.Include(c => c.CombosDetalle)
+       .FirstOrDefaultAsync(c => c.ComboId == id);
     }
+
+    //public async Task<CombosDetalle?> ObtenerComboDetalle()
+    //{}
+        
 
 
 }
