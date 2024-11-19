@@ -67,7 +67,7 @@ public class ComboServices(IDbContextFactory<Contexto> DbFactory)
         using var _contexto = await DbFactory.CreateDbContextAsync();
         return await _contexto.Combos
             .AsNoTracking()
-            //.Include(c => c.CombosDetalle)
+            .Include(c => c.CombosDetalles)
             .Where(criterio)
             .ToListAsync();
     }
@@ -79,13 +79,48 @@ public class ComboServices(IDbContextFactory<Contexto> DbFactory)
 
         return await _contexto.Combos
        .AsNoTracking()
-       //.Include(c => c.CombosDetalle)
+       .Include(c => c.CombosDetalles)
+       .ThenInclude(td => td.Articulos)
        .FirstOrDefaultAsync(c => c.ComboId == id);
     }
 
-    //public async Task<CombosDetalle?> ObtenerComboDetalle()
-    //{}
-        
+    public async Task<Combos> Crear(Combos combo)
+    {
+        await using var _contexto = await DbFactory.CreateDbContextAsync();
+        _contexto.Combos.Add(combo);
+        await _contexto.SaveChangesAsync();
+        return combo;
+    }
 
+    public async Task<List<CombosDetalle>> ObtenerDetallesComboId(int comboId)
+    {
+        await using var _contexto = await DbFactory.CreateDbContextAsync();
+        var detalles = await _contexto.CombosDetalle
+            .Where(c => c.Combos.ComboId == comboId)
+            .ToListAsync();
+
+        return detalles;
+    }
+
+    public async Task<List<Articulos>> ObtenerArticulos()
+    {
+        await using var _contexto = await DbFactory.CreateDbContextAsync();
+        return await _contexto.Articulos.ToListAsync();
+    }
+
+    public async Task<List<CombosDetalle>> ObtenerDetalle()
+    {
+        await using var _contexto = await DbFactory.CreateDbContextAsync();
+        return await _contexto.CombosDetalle.ToListAsync();
+
+    }
+
+    public async Task<List<Combos>> ObtenerCotizaciones()
+    {
+        await using var _contexto = await DbFactory.CreateDbContextAsync();
+        return await _contexto.Combos.ToListAsync();
+    }
+
+  
 
 }

@@ -1,0 +1,228 @@
+﻿@page "/Combos/Edit";
+@inject ComboServices combosServices;
+@inject NavigationManager navigationManager
+
+
+
+<PageTitle>Editar Combos</PageTitle>
+<Toasts class="p-3 mt-5" Messages="messages" Placement="ToastsPlacement.TopRight" />
+<EditForm Model="Combos" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Editar Combos</h5>
+            </div>
+
+            <div class="card-body">
+                <!-- Fecha -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha</strong></label>
+                    <InputDate class="form-control" @bind-Value="Combos.Fecha" />
+                </div>
+
+                <!-- Descripción -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Descripción</strong></label>
+                    <InputText class="form-control" @bind-Value="Combos.Descripcion" />
+                    <ValidationMessage For="@(() => Combos.Descripcion)" />
+                </div>
+
+                <!-- Precio -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Precio</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Combos.Precio" />
+                    <ValidationMessage For="@(() => Combos.Precio)" />
+                </div>
+
+                <!-- Estado de Venta -->
+                <div class="mb-3">
+                    <label class="form-label"><strong>Vendido</strong></label>
+                    <InputCheckbox class="form-check-input" @bind-Value="Combos.Vendido" />
+                </div>
+
+                <!-- Detalles del Combo -->
+                <div class="border border-success p-3 mt-3">
+                    <h5>Detalles del Combos</h5>
+
+                    <!-- Selección de artículo y cantidad -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>Artículo</strong></label>
+                            <InputSelect class="form-control form-select" @bind-Value="DetalleSeleccionado.ArticuloId">
+                                <option value="0">-- Seleccione un artículo --</option>
+                                @foreach (var articulo in ListaArticulos)
+                                {
+                                    <option value="@articulo.ArticuloId">@articulo.Descripcion</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => DetalleSeleccionado.ArticuloId)" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><strong>Cantidad</strong></label>
+                            <InputNumber class="form-control" @bind-Value="DetalleSeleccionado.Cantidad" min="1" />
+                            <ValidationMessage For="@(() => DetalleSeleccionado.Cantidad)" />
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="col-sm-2 p-0">
+                                <button type="button" class="btn btn-outline-success" @onclick="AgregarDetalle">
+                                    <span class="bi bi-plus"></span> Agregar
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Tabla de detalles -->
+                    <hr />
+                    <table class="table table-light">
+                        <thead class="table table-striped">
+                            <tr class="text-center">
+                                <th>Artículo</th>
+                                <th>Cantidad</th>
+                                <th>Costo</th>
+                                <th>Remover</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detalle in Combos.CombosDetalles)
+                            {
+                                <tr>
+                                    <td>@detalle?.Articulos?.Descripcion</td>
+                                    <td>@detalle?.Cantidad</td>
+                                    <td>@detalle?.Costo</td>
+                                    <td>
+                                      <button type="button" class="btn btn-outline-danger" @onclick="() => EliminarElDetalle(detalle)">
+                                            <span class="bi bi-trash"></span> Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer text-center mt-2">
+                <a href="/Combos/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Combos Combos { get; set; } = new Combos();
+    public CombosDetalle DetalleSeleccionado { get; set; } = new CombosDetalle();
+    public List<Articulos> ListaArticulos { get; set; } = new();
+    public List<CombosDetalle> CombosDetalles { get; set; } = new List<CombosDetalle>();
+    public List<ToastMessage> messages { get; set; } = new List<ToastMessage>();
+    decimal? MontoArticulos;
+    public int selectArticuloId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Combos.CombosDetalles = new List<CombosDetalle>();
+        ListaArticulos = await combosServices.ObtenerArticulos();
+    }
+
+    public void AgregarDetalle()
+    {
+        if (DetalleSeleccionado.ArticuloId == 0 || DetalleSeleccionado.Cantidad <= 0)
+        {
+            ShowMessage(ToastType.Danger, "Error", "Debe seleccionar un artículo y cantidad válida.");
+            return;
+        }
+
+        var articuloSeleccionado = ListaArticulos.FirstOrDefault(a => a.ArticuloId == DetalleSeleccionado.ArticuloId);
+        if (articuloSeleccionado == null)
+        {
+            ShowMessage(ToastType.Danger, "Error", "Artículo no encontrado.");
+            return;
+        }
+
+        Combos.CombosDetalles.Add(new CombosDetalle
+            {
+                ArticuloId = DetalleSeleccionado.ArticuloId,
+                Cantidad = DetalleSeleccionado.Cantidad,
+                Costo = articuloSeleccionado.Costo ?? 0 
+            });
+
+        DetalleSeleccionado = new CombosDetalle(); 
+    }
+
+
+    public async Task Guardar()
+    {
+        if (Combos.CombosDetalles == null || !Combos.CombosDetalles.Any())
+        {
+            ShowMessage(ToastType.Danger, "Error", "Debe agregar al menos un detalle al combo.");
+            return;
+        }
+
+        var paso = await combosServices.Crear(Combos);
+        if (paso != null)
+        {
+            ShowMessage(ToastType.Success, "Éxito", "El combo ha sido guardado.");
+            navigationManager.NavigateTo("/Combos/Index");
+        }
+        else
+        {
+            ShowMessage(ToastType.Danger, "Error", "Hubo un problema al guardar el combo.");
+        }
+    }
+
+    public async Task EliminarElDetalle(CombosDetalle combosdetalle)
+    {
+        var articuloSeleccionado = ListaArticulos.FirstOrDefault(a => a.ArticuloId == combosdetalle.ArticuloId);
+
+        if (articuloSeleccionado != null)
+        {
+            articuloSeleccionado.Existencia += combosdetalle.Cantidad;
+        }
+        CombosDetalles.Remove(combosdetalle);
+        selectArticuloId = combosdetalle.ArticuloId;
+        DetalleSeleccionado.Cantidad = combosdetalle.Cantidad;
+        DetalleSeleccionado.Costo = combosdetalle.Costo;
+        CalcularTotal();
+    }
+
+    private async Task CalcularTotal()
+    {
+        MontoArticulos = CombosDetalles.Sum(d => (d.Costo) * d.Cantidad);
+
+    }
+
+    private void ShowMessage(ToastType toastType, string title, string message)
+    {
+        messages.Add(new ToastMessage
+            {
+                Type = toastType,
+                Title = title,
+                Message = message,
+                HelpText = $"{DateTime.Now}"
+            });
+    }
+
+    public enum ToastType
+    {
+        Success,
+        Info,
+        Warning,
+        Danger
+    }
+
+    public class ToastMessage
+    {
+        public ToastType Type { get; set; }
+        public string Title { get; set; }
+        public string Message { get; set; }
+        public string HelpText { get; set; }
+    }
+
+}

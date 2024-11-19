@@ -8,11 +8,13 @@ public class Combos
     [Key]
     public int ComboId { get; set; }
     [Required(ErrorMessage = "Este campo debe de ser obligatorio")]
-    public DateTime Fecha {  get; set; }
+    public DateTime Fecha {  get; set; } = DateTime.Now;
     [Required(ErrorMessage = "Este campo debe de ser obligatorio")]
-    public string Descripcion { get; set; }
+    public string? Descripcion { get; set; }
     [Required(ErrorMessage = "Este campo debe de ser obligatorio")]
     public decimal  Precio { get; set; }
     [Required(ErrorMessage = "Este campo debe de ser obligatorio")]
-    public string Vendido { get; set; }
+    public bool Vendido { get; set; }
+
+    public ICollection<CombosDetalle> CombosDetalles { get; set; }
 }

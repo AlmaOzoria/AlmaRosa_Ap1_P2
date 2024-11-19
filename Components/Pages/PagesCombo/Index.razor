@@ -1,0 +1,126 @@
+﻿@page "/Combos/Index";
+@inject ComboServices combosServices;
+@rendermode InteractiveServer
+
+<EditForm Model="ListaCombos" class="border shadow-lg p-3 rounded">
+    <div class="card-header bg-primary text-white text-center py-2 rounded">
+        <h3 style="font-weight: bold;" class="mb-0 font-weight-bold">Consulta de Combos</h3>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3 align-items-end">
+
+            @*Filtro*@
+            <div class="col-md-3">
+                <label for="Filtro" class="form-label">Filtrar por:</label>
+                <select @bind="filtro" class="form-select">
+                    <option value="id">ID</option>
+                    <option value="fecha">Fecha</option>
+                    <option value="descripcion">Descripcion</option>
+                    <option value="Precio">Precio</option>
+                </select>
+            </div>
+
+            @*Barra Busqueda*@
+            <div class="col-md-6">
+                <label for="ValorFiltro" class="form-label">Búsqueda:</label>
+                <div class="input-group">
+                    <input @bind="valorFiltro" class="form-control" placeholder="Buscar" />
+                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button">
+                        <span class="bi bi-search"></span> Buscar
+                    </button>
+                </div>
+            </div>
+
+            @*Boton Crear*@
+            <div class="col-md-3 text-end">
+                <a href="/Combos/Create" class="btn btn-success" type="button"><span class="bi bi-floppy"></span> Crear </a>
+            </div>
+        </div>
+    </div>
+
+    @*Tabla*@
+    <table class="table table-bordered text-center">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th>ComboId</th>
+                <th>Fecha</th>
+                <th>Descripcion</th>
+                <th>Precio</th>
+                <th>Vendido</th>
+                <th>Ver</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var combos in ListaCombos)
+            {
+                <tr>
+                    <td>@combos.ComboId</td>
+                    <td>@combos.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@combos.Descripcion</td>
+                    <td>@combos.Precio</td>
+                    <td>@combos.Vendido</td>
+
+
+                    <td>
+                        @*Boton Editar*@
+                        <a href="/Combos/Edit/@combos.ComboId" style="border: none; background-color: transparent;" class="btn-editar">
+                            <span class="bi bi-marker-tip" style="font-size: 2rem;"></span>
+                        </a>
+                    </td>
+
+                    <td>
+                        @*Boton Eliminar*@
+                        <a href="/Combos/Delete/@combos.ComboId" style="border: none; background-color: transparent;" class="btn-eliminar">
+                            <i class="bi bi-trash3" style="font-size: 2rem;"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="card-footer text-start">
+        <p> Total de  Combos: @ListaCombos.Count</p>
+    </div>
+</EditForm>
+
+@code {
+    public Combos Combos { get; set; } = new Combos();
+    public List<Combos> ListaCombos = new List<Combos>();
+    private string valorFiltro = "";
+    private string filtro = "Id";
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaCombos = await combosServices.Listar(c => true);
+    }
+
+    public async Task Buscar()
+    {
+        if (!string.IsNullOrWhiteSpace(valorFiltro))
+        {
+            if (filtro == "id" && int.TryParse(valorFiltro, out int ComboId))
+            {
+                ListaCombos = await combosServices.Listar(c => c.ComboId == ComboId);
+            }
+            else if (filtro == "fecha" && DateTime.TryParse(valorFiltro, out DateTime fecha))
+            {
+                ListaCombos = await combosServices.Listar(c => c.Fecha.Date == fecha.Date);
+            }
+            else if (filtro == "descripcion")
+            {
+                ListaCombos = await combosServices.Listar(c => c.Descripcion != null && c.Descripcion == valorFiltro);
+            }
+
+        }
+        else
+        {
+            ListaCombos = await combosServices.Listar(t => true);
+        }
+    }
+
+
+}
+

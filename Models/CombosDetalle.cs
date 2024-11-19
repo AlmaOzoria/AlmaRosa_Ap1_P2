@@ -8,19 +8,18 @@ public class CombosDetalle
 {
     [Key]
     public int DetalleId { get; set; }
-    public string ComboId { get; set; }
+  
     public Combos? Combos { get; set; }
     [ForeignKey("Combos")]
+    public int ComboId { get; set; }
 
-    public string ArticuloId { get; set; }
     public Articulos? Articulos { get; set; }
     [ForeignKey("Articulos")]
+    public int ArticuloId { get; set; }
 
     [Required(ErrorMessage = "Este campo debe de ser obligatorio")]
     public decimal Cantidad { get; set; }
 
     [Required(ErrorMessage = "Este campo debe de ser obligatorio")]
     public decimal Costo { get; set; }
-
-    //ICollection<Combos> (CobroDetalle) 
 }

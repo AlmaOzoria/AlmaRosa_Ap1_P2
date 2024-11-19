@@ -1,0 +1,85 @@
+﻿@page "/Combos/Delete"
+@inject ComboServices comboServices
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Eliminar Combos</PageTitle>
+@if (Combos != null)
+{
+    <div class="container">
+        <div class="card shadow-header">
+
+            <div class="card-header  bg-primary text-white text-center py-2 rounded">
+                <h3><strong>Eliminar Combos</strong></h3>
+            </div>
+            <div class="card-header">
+                <h3 class="text-danger">¿Estás seguro de que quieres eliminar el siguiente combo?</h3>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow-lg">
+                            <div class="card-header">
+                                <h3 class="text-center"><strong>Datos de la Combo</strong></h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="border-primary border-2 borde">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <ul class="list-unstyled">
+                                                    <li><strong>ComboId:</strong> @Combos.ComboId</li>
+                                                    <li><strong>Descripcion:</strong> @Combos.Descripcion</li>
+                                                    <li><strong>Fecha:</strong> @Combos.Fecha</li>
+                                                    <li><strong>Precio:</strong> @Combos.Precio</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                @*Boton Eliminar*@
+                <button type="button" class="btn btn-outline-danger" @onclick="EliminarCombo"><i class="bi bi-trash-fill"></i> Eliminar</button>
+                @*Boton Volver*@
+                <button type="button" class="btn btn-outline-primary" @onclick="Volver"><i class="bi bi-box-arrow-left"></i> Volver</button>
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+    <p>Combo no encontrado.</p>
+}
+
+@code {
+    [Parameter]
+    public int ComboId { get; set; }
+    public Combos? Combos { get; set; } = new Combos();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ComboId != 0)
+        {
+            Combos = await comboServices.Buscar(ComboId);
+        }
+    }
+
+    public async Task EliminarCombo()
+    {
+        var eliminado = await comboServices.Eliminar(Combos.ComboId);
+        Volver();
+    }
+
+    public void Volver()
+    {
+        navigationManager.NavigateTo("/Combos/Index");
+    }
+}
