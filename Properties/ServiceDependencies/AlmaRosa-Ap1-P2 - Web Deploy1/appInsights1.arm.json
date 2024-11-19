@@ -36,7 +36,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('TecnicosDb', subscription().subscriptionId)))]",
+      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('AlmaRosa-Ap1-P2', subscription().subscriptionId)))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "apiVersion": "2019-10-01",
       "dependsOn": [
@@ -49,26 +49,12 @@
           "contentVersion": "1.0.0.0",
           "resources": [
             {
-              "kind": "v12.0",
+              "kind": "web",
+              "name": "AlmaRosa-Ap1-P2",
+              "type": "microsoft.insights/components",
               "location": "[parameters('resourceLocation')]",
-              "name": "blazorauthentication-alma",
-              "type": "Microsoft.Sql/servers",
-              "apiVersion": "2017-10-01-preview"
-            },
-            {
-              "sku": {
-                "name": "Basic",
-                "tier": "Basic",
-                "capacity": 5
-              },
-              "kind": "v12.0,user",
-              "location": "[parameters('resourceLocation')]",
-              "name": "blazorauthentication-alma/TecnicosDb",
-              "type": "Microsoft.Sql/servers/databases",
-              "apiVersion": "2017-10-01-preview",
-              "dependsOn": [
-                "blazorauthentication-alma"
-              ]
+              "properties": {},
+              "apiVersion": "2015-05-01"
             }
           ]
         }
@@ -76,6 +62,6 @@
     }
   ],
   "metadata": {
-    "_dependencyType": "mssql.azure"
+    "_dependencyType": "appInsights.azure"
   }
 }

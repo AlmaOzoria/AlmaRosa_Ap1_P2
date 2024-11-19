@@ -17,6 +17,11 @@ builder.Services.AddDbContextFactory<Contexto>(Options => Options.UseSqlServer(C
 
 //Inyectando service
 builder.Services.AddScoped<ComboServices>();
+builder.Services.AddScoped<ArticulosServices>();
+builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
+{
+    ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+});
 
 var app = builder.Build();
 
