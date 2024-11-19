@@ -3,15 +3,13 @@
 @inject ArticulosServices articulosServices
 @inject NavigationManager navigationManager
 
-
-
 <PageTitle>Registro de Combos</PageTitle>
 
 <EditForm Model="Combos" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
     <div class="card shadow-lg border-0 rounded" style="background-color: #f8f9fa;">
         <div class="card-header bg-primary text-white" style="text-align: center;">
-            <h3> <i class="fas fa-clipboard-list"></i> Registro de Combos</h3>
+            <h3><i class="fas fa-clipboard-list"></i> Registro de Combos</h3>
         </div>
     </div>
 
@@ -28,25 +26,28 @@
                 </div>
             </div>
         </div>
+
         @* Fecha *@
         <div class="mb-3">
             <label for="Fecha" class="form-label">Fecha:</label>
             <InputDate @bind-Value="Combos.Fecha" class="form-control" />
             <ValidationMessage For="@(() => Combos.Fecha)" />
         </div>
+
         @* Descripcion *@
         <div class="mb-3">
             <label for="Descripcion" class="form-label">Descripcion:</label>
             <InputText @bind-Value="Combos.Descripcion" class="form-control" />
             <ValidationMessage For="@(() => Combos.Descripcion)" />
-
         </div>
+
         @* Precio *@
         <div class="mb-3">
             <label for="Precio" class="form-label">Precio:</label>
             <InputNumber @bind-Value="Combos.Precio" class="form-control" />
             <ValidationMessage For="@(() => Combos.Precio)" />
         </div>
+
         @* Vendido *@
         <div class="mb-3">
             <label for="vendido" class="form-label">Vendido:</label>
@@ -54,50 +55,50 @@
             <ValidationMessage For="@(() => Combos.Vendido)" />
         </div>
 
-        @* Selecionar Articulo *@
+        @* Seleccionar Articulo *@
         <div class="card border-success mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Detalles de articulos a utilizar</h5>
+                <h5 class="mb-0">Detalles de artículos a utilizar</h5>
             </div>
-            <div style="display: flex; align-items: center;"
+            <div style="display: flex; align-items: center;">
                 <div class="col-3 text-center">
                     <InputSelect @bind-Value="selectedArticuloId" class="form-select">
-                        <option value="0">--Seleccione un articulo--</option>
+                        <option value="0">--Seleccione un artículo--</option>
                         @foreach (var articulo in ListaArticulos)
                         {
-                                    <option value="@articulo.ArticuloId">@articulo.ArticuloId - @articulo.Descripcion -Existencia-@articulo.Existencia </option>
+                            <option value="@articulo.ArticuloId">@articulo.ArticuloId - @articulo.Descripcion -Existencia-@articulo.Existencia</option>
                         }
                     </InputSelect>
                     <ValidationMessage For="@(() => selectedArticuloId)" />
                 </div>
 
-                @* Selecionar Cantidad *@
+                @* Seleccionar Cantidad *@
                 <div class="col-sm-3 p-0">
-                        <div class="input-group">
-                            <span class="input-group-text">Cantidad:</span>
-                            <InputNumber @bind-Value="CombosDetalles.Cantidad" class="form-control" />
-                        </div>
-                        <ValidationMessage For="@(() => CombosDetalles.Cantidad)" />
+                    <div class="input-group">
+                        <span class="input-group-text">Cantidad:</span>
+                        <InputNumber @bind-Value="CombosDetalles.Cantidad" class="form-control" />
+                    </div>
+                    <ValidationMessage For="@(() => CombosDetalles.Cantidad)" />
                 </div>
 
-                @* costo*@
+                @* Costo *@
                 <div class="col-sm-3 p-0">
-                        <div class="input-group">
-                            <span class="input-group-text">Costo:</span>
-                            <InputNumber @bind-Value="CombosDetalles.Costo" class="form-control" Disabled />
-                        </div>
-                        <ValidationMessage For="@(() => CombosDetalles.Costo)" />
+                    <div class="input-group">
+                        <span class="input-group-text">Costo:</span>
+                        <InputNumber @bind-Value="CombosDetalles.Costo" class="form-control" Disabled />
+                    </div>
+                    <ValidationMessage For="@(() => CombosDetalles.Costo)" />
                 </div>
 
-                @* boton agregar *@
+                @* Botón agregar *@
                 <div class="col-sm-2 p-0">
                     <button type="button" class="btn btn-outline-success" @onclick="AgregarDetalle">
                         <span class="bi bi-plus"></span> Agregar
                     </button>
                 </div>
-        </div>
+            </div>
 
-            @* Tabla de combos Detalles *@
+            @* Tabla de combos detalles *@
             <div class="table-responsive mt-3">
                 <table class="table table-bordered text-center">
                     <thead>
@@ -105,7 +106,7 @@
                             <th>Id</th>
                             <th>Cantidad</th>
                             <th>Costo</th>
-
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,7 +126,6 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
 
         @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -137,22 +137,22 @@
 
         <div class="card-footer bg-light d-flex justify-content-center mt-3">
             <div class="btn-group">
-                @*Boton Nuevo*@
-                <button type="button" class="btn btn-outline-primary ml-2" @onclick="Nuevo"><span class="bi bi-plus"></span> Nuevo </button>
-                @*Boton Guardar*@
-                <button type="button" class="btn btn-outline-success ml-2" @onclick="Guardar"><span class="bi bi-check-circle-fill"></span> Guardar </button>
-                @*Boton Retroceder*@
-                <a type="button" href="/Combos/Index/" class="btn btn-outline-danger"><span class="bi bi-arrow-bar-left"></span> Retroceder </a>
+                @* Botón Nuevo *@
+                <button type="button" class="btn btn-outline-primary ml-2" @onclick="Nuevo">
+                    <span class="bi bi-plus"></span> Nuevo
+                </button>
+                @* Botón Guardar *@
+                <button type="submit" class="btn btn-outline-success ml-2">
+                    <span class="bi bi-check-circle-fill"></span> Guardar
+                </button>
+                @* Botón Retroceder *@
+                <a type="button" href="/Combos/Index/" class="btn btn-outline-danger">
+                    <span class="bi bi-arrow-bar-left"></span> Retroceder
+                </a>
             </div>
         </div>
     </div>
-
-
 </EditForm>
-
-
-
-
 
 @code {
     [Parameter]
@@ -173,7 +173,7 @@
         ListaArticulos = await articulosServices.ListarArticulos();
     }
 
-    public async Task AgregarDetalle()
+    public Task AgregarDetalle()
     {
         ErrorMessage = string.Empty;
 
@@ -182,13 +182,13 @@
         if (articuloSeleccionado == null || CombosDetalles.Cantidad <= 0)
         {
             ErrorMessage = "Seleccione un artículo y una cantidad válida.";
-            return;
+            return Task.CompletedTask; 
         }
 
         if (articuloSeleccionado.Existencia < CombosDetalles.Cantidad)
         {
             ErrorMessage = "No hay suficiente existencia del artículo para completar la operación.";
-            return;
+            return Task.CompletedTask;
         }
 
         articuloSeleccionado.Existencia -= CombosDetalles.Cantidad;
@@ -196,13 +196,12 @@
         CombosDetalles.Costo = (decimal)articuloSeleccionado.Precio;
 
         var nuevoDetalle = new CombosDetalle
-            {
-                ArticuloId = articuloSeleccionado.ArticuloId,
-                DetalleId = ComboId,
-                Cantidad = CombosDetalles.Cantidad,
-                Costo = (decimal)articuloSeleccionado.Precio,
-            };
-
+        {
+            ArticuloId = articuloSeleccionado.ArticuloId,
+            DetalleId = ComboId,
+            Cantidad = CombosDetalles.Cantidad,
+            Costo = (decimal)articuloSeleccionado.Precio,
+        };
 
         ListaDetalle.Add(nuevoDetalle);
 
@@ -210,8 +209,9 @@
         selectedArticuloId = 0;
 
         CalcularMontoTotal();
-    }
 
+        return Task.CompletedTask;
+    }
 
     private async Task CalcularMontoTotal()
     {
@@ -228,18 +228,27 @@
         }
         ListaDetalle.Remove(detalle);
         selectedArticuloId = detalle.ArticuloId;
-        CombosDetalles.Cantidad = detalle.Cantidad;
-        CombosDetalles.Costo = detalle.Costo;
-
-        CombosDetalles = new CombosDetalle();
-        selectedArticuloId = 0;
-
-        CalcularMontoTotal();
+        await CalcularMontoTotal();
     }
+
+    public async Task Guardar()
+    {
+        ErrorMessage = string.Empty;
+        if (await combosServices.Guardar(Combos))
+        {
+            navigationManager.NavigateTo("/Combos/Index");
+        }
+        else
+        {
+            ErrorMessage = "No se pudo guardar el registro.";
+        }
+    }
+
 
     public void Nuevo()
     {
         Combos = new Combos();
+            CombosDetalles = new CombosDetalle();
         Existe = false;
         ErrorMessage = string.Empty;
     }
@@ -279,20 +288,6 @@
         return !Existe;
     }
 
-    public async Task Guardar()
-    {
-
-        if (!await Validar())
-        {
-            return;
-        }
-        var guardo = await combosServices.Guardar(Combos);
-        if (guardo)
-        {
-            Nuevo();
-            Volver();
-        }
-    }
 
     public void Volver()
     {
